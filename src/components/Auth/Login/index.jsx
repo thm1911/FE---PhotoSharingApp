@@ -12,23 +12,12 @@ import { useNavigate } from "react-router-dom";
 import fetchModel from "../../../lib/fetchModelData";
 import CustomTextField from "../../common/CustomTextField";
 import CustomButton from "../../common/CustomButton";
-import { setAuthToken } from "../../../common/functions";
+import { setAuthToken, setUserId, getUserId, getAuthToken } from "../../../common/functions";
 
 const Login = () => {
-  //Context
-  //   const { loginUser } = useContext(AuthContext);
-  //Navigate
+  console.log("🚀 ~ Login ~ " + "Token:" + getAuthToken())
   const navigate = useNavigate();
-
-  //Local state
-  // const [type, setType] = useState("password");
-
   const [alert, setAlert] = useState(null);
-
-  // const [loginForm, setLoginForm] = useState({
-  //   username: "",
-  //   password: "",
-  // });
   const {
     register,
     handleSubmit,
@@ -53,7 +42,7 @@ const Login = () => {
       } else {
         setAuthToken(res?.token);
         setAlert({ type: "success", msg: res.message });
-        navigate("/home");
+        navigate("/users");
       }
     } catch (error) {
       setAlert({ type: "error", msg: error });

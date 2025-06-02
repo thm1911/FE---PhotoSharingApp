@@ -1,10 +1,11 @@
 .main-topbar-buffer {
     margin-top: 60px;
-  }
+}
+
 .main-grid-item {
-    min-height: calc(100vh - 85px);
-    height: max-content;
-    padding: 10px;
+    padding: 0;
+    height: 75vh;
+    overflow: hidden;
 }
 
   

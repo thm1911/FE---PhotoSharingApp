@@ -18,15 +18,10 @@ import CustomButton from "../../common/CustomButton";
 import MyTextField from "../../common/CustomDoubleTextField";
 import CustomTextField from "../../common/CustomTextField";
 import CustomDoubleTextField from "../../common/CustomDoubleTextField";
-import { getAuthToken, setAuthToken } from "../../../common/functions";
+import { getAuthToken, setAuthToken} from "../../../common/functions";
 const Register = () => {
-  //Context
-  //   const { loginUser } = useContext(AuthContext);
-  //Navigate
+  console.log("🚀 ~ Login ~  Token:" + getAuthToken())
   const navigate = useNavigate();
-
-  //Local state
-  // const [type, setType] = useState("password");
   const [alert, setAlert] = useState(null);
 
   const {
@@ -67,9 +62,7 @@ const Register = () => {
         console.log("🚀 ~ handleSubmit ~ success:", res.token)
         setAuthToken(res.token);
         setAlert({ type: "success", msg: res.message });
-        setTimeout(() => {
-          navigate("/home");
-        }, 1000);
+        navigate("/users");
       } else {
         setAlert({ type: "error", msg: res.message });
       }

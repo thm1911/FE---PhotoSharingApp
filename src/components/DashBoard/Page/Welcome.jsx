@@ -7,14 +7,22 @@ import {
     Grid,
     Stack,
     Typography,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from '../../../images/background_dashboard.jpg';
 import CustomButton from "../../common/CustomButton";
-import zIndex from "@mui/material/styles/zIndex";
+import { useState, useEffect } from "react";
 
 const Welcome = (props) => {
     const navigate = useNavigate();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    useEffect(() => {
+        setOpenSnackbar(true);
+    }, []);
+
     return (
         <Grid item flex={1}>
             <Box
@@ -59,6 +67,17 @@ const Welcome = (props) => {
                     </Stack>
                 </CardMedia>
             </Box>
+
+            <Snackbar 
+                open={openSnackbar} 
+                autoHideDuration={2000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert severity="info" sx={{ width: '100%' }}>
+                    Please login to explore our community!
+                </Alert>
+            </Snackbar>
         </Grid>
     );
 };

@@ -9,9 +9,10 @@ import UserDetail from "./components/UserDetail";
 import UserList from "./components/UserList";
 import UserPhotos from "./components/UserPhotos";
 import Auth from './components/Auth';
-import DashBoard from './components/Auth/DashBoard';
 import Home from './components/DashBoard/Page/Home';
-import PublicRoute from "./components/common/PublicRoute";
+import DashBoard from './components/DashBoard';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
+import InitialPage from './components/DashBoard/Page/InitialPage';
 
 const App = (props) => {
   return (
@@ -19,23 +20,35 @@ const App = (props) => {
       <Router>
         <Routes>
           <Route path="/" element={<DashBoard />} />
-          <Route path="/home" element={<Home />} />
-          <Route
-            path="/login"
+          <Route 
+            path="/"
             element={
-              <PublicRoute>
-                <Auth authRoute="login" />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Auth authRoute="register" />
-              </PublicRoute>
-            }
-          />
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>}
+          >
+
+            <Route index
+              path="/users"
+              element={
+                <ProtectedRoute>
+                  <InitialPage />
+                </ProtectedRoute>}
+            />
+            <Route
+              index
+              path="/users/:userId"
+              element={
+                <ProtectedRoute>
+                  <UserDetail />
+                </ProtectedRoute>
+              }
+            />
+
+
+          </Route>
+          <Route path="/login" element={<Auth authRoute="login" />} />
+          <Route path="/register" element={<Auth authRoute="register" />} />
         </Routes>
       </Router>
     </Box>

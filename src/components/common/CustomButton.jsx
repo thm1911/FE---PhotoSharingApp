@@ -17,6 +17,10 @@ const CustomButton = ({
     '&:hover': {
       backgroundColor: variant === "contained" ? "#F28705" : "transparent",
     },
+    '&.Mui-disabled': {
+      backgroundColor: error ? '#ffcdd2' : 'rgba(0, 0, 0, 0.12)',
+      color: error ? '#d32f2f' : 'rgba(0, 0, 0, 0.26)',
+    },
     ...props.sx
   };
 
