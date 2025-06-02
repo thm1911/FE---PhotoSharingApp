@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import fetchModel from "../../../lib/fetchModelData";
 import CustomTextField from "../../common/CustomTextField";
 import CustomButton from "../../common/CustomButton";
+import { setAuthToken } from "../../../common/functions";
 
 const Login = () => {
   //Context
@@ -40,26 +41,24 @@ const Login = () => {
   });
 
   const onSubmit = async (event) => {
-    // try {
-    //   const res = await fetchModel(
-    //     "/admin/login",
-    //     "post",
-    //     JSON.stringify(event)
-    //   );
+    try {
+      const res = await fetchModel(
+        "/admin/login",
+        "post",
+        JSON.stringify(event)
+      );
 
-    //   if (!res.success) {
-    //     setAlert({ type: "danger", msg: res.msg });
-    //   } else {
-    //     saveAuthToken(res?.token);
-    //     setAlert(null);
-    //     await loadUser(dispatch);
-    //     navigate("/").then(() =>
-    //       functionAlert("Thông báo", "Login thành công!")
-    //     );
-    //   }
-    // } catch (error) {
-    //   console.log("🚀 ~ handleSubmit ~ error:", error);
-    // }
+      if (!res.success) {
+        setAlert({ type: "error", msg: res.message });
+      } else {
+        setAuthToken(res?.token);
+        setAlert({ type: "success", msg: res.message });
+        navigate("/home");
+      }
+    } catch (error) {
+      setAlert({ type: "error", msg: error });
+      console.log("🚀 ~ handleSubmit ~ error:", error);
+    }
   };
 
   return (
@@ -89,7 +88,7 @@ const Login = () => {
         errors={errors}
       />
       {alert && (
-        <Alert variant="outlined" severity="error">
+        <Alert severity={alert.type}>
           {alert.msg}
         </Alert>
       )}

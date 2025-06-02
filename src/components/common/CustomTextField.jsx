@@ -1,14 +1,14 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-const CustomTextField = ({ 
-  name, 
-  label, 
-  type = "text", 
-  required = false, 
-  register, 
+const CustomTextField = ({
+  name,
+  label,
+  type = "text",
+  required = false,
+  register,
   errors,
-  ...props 
+  ...props
 }) => {
   return (
     <TextField
@@ -19,7 +19,7 @@ const CustomTextField = ({
       label={label}
       name={name}
       type={type}
-      {...register(name, { required })}
+      {...register(name)}
       error={!!errors[name]}
       helperText={errors[name]?.message}
       sx={{
