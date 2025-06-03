@@ -44,9 +44,12 @@ const Home = (props) => {
         const token = getAuthToken();
         formData.append("photo", selectedFile);
         formData.append("description", description);
+        formData.append("user_id", getUserId());
 
         try {
-            const res = await fetchModel("/api/photosOfUser/upload", "POST", JSON.stringify(formData), token);
+            const res = await fetchModel("/api/photosOfUser/upload", "POST", 
+                formData, 
+                token);
             if (res.success) {
                 setOpen(false);
                 setSelectedFile(null);
@@ -67,7 +70,7 @@ const Home = (props) => {
             </Grid>
             <div className="main-topbar-buffer" />
             <Grid item sm={3}>
-                <Paper className="main-grid-item" >
+                <Paper style={{ maxHeight: "75vh", overflow: "auto" }}>
                     <UserList />
                 </Paper>
             </Grid>
@@ -75,9 +78,9 @@ const Home = (props) => {
                 <Outlet />
             </Grid>
 
-            <Box sx={{ position: "fixed", bottom: 10, right: 10 }}>
+            <Box sx={{ position: "fixed", bottom: 10, left: 10, backgroundColor: "transparent" }}>
                 <IconButton color="black">
-                    <AddBox sx={{ fontSize: 40, color: "#F29F05" }}
+                    <AddBox sx={{ fontSize: 60, color: "#F29F05" }}
                         onClick={() => setOpen(true)} />
                 </IconButton>
             </Box>

@@ -34,6 +34,9 @@ import {
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import CommentDetail from "../../UserComments/item/ItemComment";
+import fetchModel from "../../../lib/fetchModelData";
+import { getAuthToken, getUserId } from "../../../common/functions";
+import { useNavigate } from "react-router-dom";
 // import { translate } from "../../../utils/i18n/translate";
 // import { BaseUrl, socketComment } from "../../../utils/socketComment";
 // import "./styles.css";
@@ -41,11 +44,12 @@ import CommentDetail from "../../UserComments/item/ItemComment";
 
 const ItemPhoto = (props) => {
     const { photo, userInfo } = props;
+    const [user, setUser] = useState(null);
     // let userPostPhoto =
     //     userInfo?._id === item?.user_id
     //         ? userInfo
     //         : listUser.find((i) => i._id === item?.user_id);
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     // const [photoData, setPhotoData] = useState(item);
     // // const [numOfFavorite, setNumOfFavorite] = useState(0);
     // // const [numOfBookmark, setNumOfBookmark] = useState(0);
@@ -60,33 +64,53 @@ const ItemPhoto = (props) => {
 
     // const isUser = item?.user_id === user?._id;
 
-    // const postComment = async () => {
-    //   try {
-    //     setLoading(true);
-    //     const res = await fetchModel(
-    //       `/api/commentsOfUser/${photoData?._id}`,
-    //       "post",
-    //       JSON.stringify({ comment })
-    //     );
-    //     console.log("🚀 ~ postComment ~ res:", res);
-    //     if (res?.success) {
-    //       setComment("");
+    const fetchUser = async () => {
+        try {
+          const token = getAuthToken();
+          const userId = getUserId();
+          const response = await fetchModel(`/api/user/${userId}`, "GET", null, token);
+          if (response.success) {
+            await setUser(response.data);
+          } else {
+            console.log("❌ Error get user:", response);
+          }
+        } catch (error) {
+          console.error("❌ Error get user:", error);
+        }
+    };
 
-    //       setExpanded(true);
-    //       setPhotoData(res?.data);
-    //       socketComment.emit("sendComment");
-    //     }
-    //     setLoading(false);
-    //   } catch (error) {
-    //     setLoading(false);
-    //     console.log("🚀 ~ getData ~ error:", error);
-    //   }
-    // };
+    const postComment = async () => {
+        await fetchUser();
+        console.log("User", user);
+        try {
+            const token = getAuthToken();
+            const req = {
+                comment: comment,
+                photo_id: photo._id,
+                user: user
+            }
+            const res = await fetchModel(
+            `/api/commentsOfUser/post`,
+            "post",
+            JSON.stringify(req),
+            token
+            );
+            if (res?.success) {
+            setExpanded(true);
+            //   setPhoto(res?.data);
+            }
+        } catch (error) {
+            console.log("❌ Error post comment:", error);
+        }
+    };
 
-    // const goToUser = (userId) => {
-    //   console.log("userId", userId);
-    //   navigate(`/users/${userId}`);
-    // };
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+    const goToUser = (userId) => {
+      navigate(`/users/${userId}`);
+    };
     // const handleFavorite = async () => {
     //   const res = await fetchModel(
     //     `/api/likeOfPhoto/${photoData?._id}`,
@@ -148,6 +172,7 @@ const ItemPhoto = (props) => {
     //   getInitData();
     // }, [isFavorite, isBookmark]);
 
+    console.log("photo", photo.file_path);
     return (
         <Grid item xs={16} sm={12}>
             <Card variant="outlined" sx={{ mb: 3, mr: 2 }}>
@@ -157,6 +182,7 @@ const ItemPhoto = (props) => {
                             variant="body1"
                             fontWeight={"bold"}
                             style={{ cursor: "pointer" }}
+                            onClick={() => goToUser(userInfo?._id)}
                         >
                             {`${userInfo?.first_name} ${userInfo?.last_name}`}
                         </Typography>
@@ -165,6 +191,7 @@ const ItemPhoto = (props) => {
                     avatar={
                         <Avatar
                             sx={{ bgcolor: "#30d5c8" }}
+                            onClick={() => goToUser(userInfo?._id)}
                         >
                             {userInfo?.first_name?.[0]}
                         </Avatar>
@@ -195,14 +222,19 @@ const ItemPhoto = (props) => {
                 //     ) : null
                 // }
                 />
+                <Typography variant="body2" sx={{ marginLeft: 3 }}>
+                    {photo?.description}
+                </Typography>
                 <CardMedia
                     component="img"
                     sx={{
                         height: 400,
                         objectFit: "contain",
                     }}
-                    image={
-                        `../../images/${photo?.file_name}`
+                    src={
+                        photo?.file_path ?
+                            photo?.file_path :
+                            `../../images/${photo?.file_name}`
                     }
                 />
 
@@ -260,7 +292,7 @@ const ItemPhoto = (props) => {
                             >
                                 {[...photo?.comments]?.reverse()?.map((items) => (
                                     <ListItem >
-                                        <CommentDetail items={items} userId={photo.user_id} />
+                                        <CommentDetail items={items}/>
                                     </ListItem>
                                 ))}
                             </List>
@@ -283,7 +315,7 @@ const ItemPhoto = (props) => {
                         color="primary"
                         sx={{ p: "10px" }}
                         aria-label="directions"
-                    // onClick={postComment}
+                        onClick={postComment}
                     >
                         <Send />
                     </IconButton>

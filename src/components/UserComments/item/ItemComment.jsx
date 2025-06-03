@@ -3,32 +3,42 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { getAuthToken } from "../../../common/functions";
 import fetchModel from "../../../lib/fetchModelData";
+import { useNavigate } from "react-router-dom";
+
 
 const CommentDetail = (props) => {
-    const { items, userId } = props;
-    const [user, setUser] = useState(null);
-    const getUserComment = async () => {
-        try {
-            const token = getAuthToken();
-            const response = await fetchModel(`/api/user/${userId}`, "GET", null, token);
-            if (response.success) {
-                setUser(response.data);
-            } else {
-                console.log("❌ Error get list user:", response);
-            }
-        } catch (error) {
-            console.error("❌ Error get user:", error);
-        }
-    }
+    const { items } = props;
+    const user = items.user;
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        getUserComment();
-    }, [items]);
+    const goToUser = (userId) => {
+        navigate(`/users/${userId}`);
+    };
+
+    // const [user, setUser] = useState(null);
+    // const userId = items.user
+    // const getUserComment = async () => {
+    //     try {
+    //         const token = getAuthToken();
+    //         const response = await fetchModel(`/api/user/${userId}`, "GET", null, token);
+    //         if (response.success) {
+    //             setUser(response.data);
+    //         } else {
+    //             console.log("❌ Error get list user:", response);
+    //         }
+    //     } catch (error) {
+    //         console.error("❌ Error get user:", error);
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     getUserComment();
+    // }, [items]);
 
     return (
         <div>
             <Typography
-                // onClick={() => goToUser(items?.user?._id)}
+                onClick={() => goToUser(items?.user?.objectID || items?.user?._id)}
                 style={{
                     display: "flex",
                     cursor: "pointer",
@@ -38,6 +48,7 @@ const CommentDetail = (props) => {
                 }}
             >
                 <Avatar
+                    onClick={() => goToUser(items?.user?.objectID || items?.user?._id)}
                     sx={{
                         bgcolor: "#30d5c8",
                         mr: "12px",

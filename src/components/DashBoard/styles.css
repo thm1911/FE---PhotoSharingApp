@@ -2,10 +2,8 @@
     margin-top: 60px;
 }
 
-.main-grid-item {
+
+  .main-grid-item {
     padding: 0;
-    height: 75vh;
     overflow: hidden;
 }
-
-  

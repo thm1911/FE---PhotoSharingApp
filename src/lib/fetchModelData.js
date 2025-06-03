@@ -7,9 +7,10 @@ import { baseUrl } from "../utils/utils";
  *
  */
 function fetchModel(url, method, body, token) {
-  const headers = {
-    "Content-Type": "application/json",
-  };
+  const headers = {};
+  if(!(body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   // Thêm token vào header nếu có
   if (token) {
