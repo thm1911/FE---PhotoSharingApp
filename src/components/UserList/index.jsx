@@ -11,8 +11,8 @@ import "./styles.css";
 import models from "../../modelData/models";
 import { useState, useEffect } from "react";
 import fetchModel from "../../lib/fetchModelData";
-import ItemUser from "./ItemUser";
 import { useNavigate } from "react-router-dom";
+import ItemUser from "./item/ItemUser";
 
 
 function UserList() {
@@ -38,7 +38,7 @@ function UserList() {
 
 
   return (
-    <div style={{ 
+    <div style={{
       height: '75vh',
       overflowY: 'auto',
       padding: '8px'

@@ -20,7 +20,7 @@ const App = (props) => {
       <Router>
         <Routes>
           <Route path="/" element={<DashBoard />} />
-          <Route 
+          <Route
             path="/"
             element={
               <ProtectedRoute>
@@ -44,7 +44,15 @@ const App = (props) => {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              index
+              path="/photos/:userId"
+              element={
+                <ProtectedRoute>
+                  <UserPhotos />
+                </ProtectedRoute>
+              }
+            />
 
           </Route>
           <Route path="/login" element={<Auth authRoute="login" />} />

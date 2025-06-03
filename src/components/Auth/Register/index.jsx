@@ -18,7 +18,7 @@ import CustomButton from "../../common/CustomButton";
 import MyTextField from "../../common/CustomDoubleTextField";
 import CustomTextField from "../../common/CustomTextField";
 import CustomDoubleTextField from "../../common/CustomDoubleTextField";
-import { getAuthToken, setAuthToken} from "../../../common/functions";
+import { getAuthToken, setAuthToken, setUserId } from "../../../common/functions";
 const Register = () => {
   console.log("🚀 ~ Login ~  Token:" + getAuthToken())
   const navigate = useNavigate();
@@ -59,15 +59,15 @@ const Register = () => {
       );
 
       if (res.success) {
-        console.log("🚀 ~ handleSubmit ~ success:", res.token)
         setAuthToken(res.token);
+        setUserId(res?.user?.id);
         setAlert({ type: "success", msg: res.message });
         navigate("/users");
       } else {
         setAlert({ type: "error", msg: res.message });
       }
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
+      console.log("❌ Error register:", error);
       setAlert({ type: "error", msg: error.message || "Something went wrong" });
     }
   };

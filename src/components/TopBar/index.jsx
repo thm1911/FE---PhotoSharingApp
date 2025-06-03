@@ -10,7 +10,7 @@ import fetchModel from "../../lib/fetchModelData";
 /**
  * Define TopBar, a React component of Project 4.
  */
-function TopBar () {
+function TopBar() {
   const navigate = useNavigate();
   const token = getAuthToken();
 
@@ -22,12 +22,12 @@ function TopBar () {
         navigate("/login");
       }
     } catch (error) {
-      console.log("🚀 ~ logout ~ error:", error.message);
+      console.log("❌ Error logout:", error.message);
     }
   }
 
-    return (
-      <AppBar className="topbar-appBar">
+  return (
+    <AppBar className="topbar-appBar">
       <Toolbar
         sx={{
           display: "flex",

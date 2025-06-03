@@ -1,37 +1,97 @@
 import '../../../App.css';
 
-import React from "react";
-import { Grid, Typography, Paper } from "@mui/material";
+import React, { useState } from "react";
+import { Grid, Typography, Paper, SpeedDial, SpeedDialIcon, SpeedDialAction, Box, IconButton } from "@mui/material";
 import { BrowserRouter as Router, Route, Routes, Outlet } from "react-router-dom";
 import TopBar from '../../TopBar';
 import UserList from '../../UserList';
 import UserDetail from '../../UserDetail';
 import UserPhotos from '../../UserPhotos';
 import { getAuthToken, getUserId } from '../../../common/functions';
+import { AddAPhoto, AddBox } from '@mui/icons-material';
+import CreatePhoto from '../../UserPhotos/item/CreatePhotos';
+import fetchModel from '../../../lib/fetchModelData';
+
 
 
 const Home = (props) => {
+    const [open, setOpen] = useState(false);
+    const [close, setClose] = useState(false);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [uploaded, setUploaded] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [description, setDescription] = useState("");
 
-    console.log("🚀 ~ Login ~ Token:" + getAuthToken())
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        console.log("file" + file);
+        setSelectedFile(file);
+        if (file) {
+            setUploaded(URL.createObjectURL(file));
+        }
+    }
+
+    const handleSubmit = async () => {
+        console.log("selectedFile" + selectedFile.path);
+        if (!selectedFile) {
+            setError("Please select a file");
+            return;
+        }
+        setLoading(true);
+        setError(null);
+        const formData = new FormData();
+        const token = getAuthToken();
+        formData.append("photo", selectedFile);
+        formData.append("description", description);
+
+        try {
+            const res = await fetchModel("/api/photosOfUser/upload", "POST", JSON.stringify(formData), token);
+            if (res.success) {
+                setOpen(false);
+                setSelectedFile(null);
+                setUploaded(null);
+                setError(null);
+            }
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
-        <div>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <TopBar />
-                </Grid>
-                <div className="main-topbar-buffer" />
-                <Grid item sm={3}>
-                    <Paper className="main-grid-item" >
-                        <UserList />
-                    </Paper>
-                </Grid>
-                <Grid item sm={9}>
-                    <Paper className="main-grid-item">
-                        <Outlet />
-                    </Paper>
-                </Grid>
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <TopBar />
             </Grid>
-        </div>
+            <div className="main-topbar-buffer" />
+            <Grid item sm={3}>
+                <Paper className="main-grid-item" >
+                    <UserList />
+                </Paper>
+            </Grid>
+            <Grid item sm={9}>
+                <Outlet />
+            </Grid>
+
+            <Box sx={{ position: "fixed", bottom: 10, right: 10 }}>
+                <IconButton color="black">
+                    <AddBox sx={{ fontSize: 40, color: "#F29F05" }}
+                        onClick={() => setOpen(true)} />
+                </IconButton>
+            </Box>
+
+            <CreatePhoto open={open}
+                onClose={() => setOpen(false)}
+                handleFileChange={handleFileChange}
+                uploaded={uploaded}
+                description={description}
+                setDescription={setDescription}
+                handleSubmit={handleSubmit}
+                loading={loading}
+            />
+        </Grid>
     );
 }
 

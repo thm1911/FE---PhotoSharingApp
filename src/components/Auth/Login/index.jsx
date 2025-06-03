@@ -15,7 +15,7 @@ import CustomButton from "../../common/CustomButton";
 import { setAuthToken, setUserId, getUserId, getAuthToken } from "../../../common/functions";
 
 const Login = () => {
-  console.log("🚀 ~ Login ~ " + "Token:" + getAuthToken())
+  console.log("~ Login ~ " + "Token:" + getAuthToken())
   const navigate = useNavigate();
   const [alert, setAlert] = useState(null);
   const {
@@ -41,12 +41,13 @@ const Login = () => {
         setAlert({ type: "error", msg: res.message });
       } else {
         setAuthToken(res?.token);
+        setUserId(res?.user?.id);
         setAlert({ type: "success", msg: res.message });
         navigate("/users");
       }
     } catch (error) {
       setAlert({ type: "error", msg: error });
-      console.log("🚀 ~ handleSubmit ~ error:", error);
+      console.log("❌ Error login:", error);
     }
   };
 

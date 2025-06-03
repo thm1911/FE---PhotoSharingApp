@@ -1,3 +1,4 @@
+import { BorderColor } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React from "react";
 
@@ -12,10 +13,12 @@ const CustomButton = ({
 }) => {
   const buttonStyles = {
     textTransform: 'none',
+    borderColor: color,
     backgroundColor: variant === "contained" ? color : "transparent",
     color: variant === "contained" ? "white" : color,
     '&:hover': {
       backgroundColor: variant === "contained" ? "#F28705" : "transparent",
+      borderColor: "#F28705",
     },
     '&.Mui-disabled': {
       backgroundColor: error ? '#ffcdd2' : 'rgba(0, 0, 0, 0.12)',
