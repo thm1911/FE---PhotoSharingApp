@@ -6,7 +6,7 @@ import fetchModel from "../../../lib/fetchModelData";
 import { useNavigate } from "react-router-dom";
 
 
-const CommentDetail = (props) => {
+const ItemComment = (props) => {
     const { items } = props;
     const user = items.user;
     const navigate = useNavigate();
@@ -14,26 +14,6 @@ const CommentDetail = (props) => {
     const goToUser = (userId) => {
         navigate(`/users/${userId}`);
     };
-
-    // const [user, setUser] = useState(null);
-    // const userId = items.user
-    // const getUserComment = async () => {
-    //     try {
-    //         const token = getAuthToken();
-    //         const response = await fetchModel(`/api/user/${userId}`, "GET", null, token);
-    //         if (response.success) {
-    //             setUser(response.data);
-    //         } else {
-    //             console.log("❌ Error get list user:", response);
-    //         }
-    //     } catch (error) {
-    //         console.error("❌ Error get user:", error);
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     getUserComment();
-    // }, [items]);
 
     return (
         <div>
@@ -59,7 +39,6 @@ const CommentDetail = (props) => {
             </Typography>
             <Typography
                 variant="body1"
-                color="ActiveCaption"
                 className="breakall"
                 sx={{
                     mt: 1
@@ -72,4 +51,4 @@ const CommentDetail = (props) => {
     );
 };
 
-export default CommentDetail;
+export default ItemComment;

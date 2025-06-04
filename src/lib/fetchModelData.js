@@ -1,5 +1,5 @@
+import { removeAuthToken, removeUserId } from "../common/functions";
 import { baseUrl } from "../utils/utils";
-
 /**
  * fetchModel - Fetch a model from the web server.
  *
@@ -22,7 +22,16 @@ function fetchModel(url, method, body, token) {
     method: method,
     body: body,
   };
-  const response = fetch(baseUrl + url, request).then((res) => res.json());
+  const response = fetch(baseUrl + url, request).then((res) => {
+    if(res.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.setItem("token");
+      window.location.href = "/login";
+      return;
+    }
+    return res.json();
+  });
   return response;
 }
 

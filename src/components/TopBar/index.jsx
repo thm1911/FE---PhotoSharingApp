@@ -52,8 +52,6 @@ function TopBar() {
     fetchCurrentUser();
   }, [userId]);
 
-  console.log("🚀 ~ title:", title);
-
   return (
     <AppBar className="topbar-appBar">
       <Toolbar

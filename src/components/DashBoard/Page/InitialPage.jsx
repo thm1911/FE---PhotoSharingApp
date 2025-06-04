@@ -30,6 +30,7 @@ const InitialPage = () => {
       justifyContent={"center"}
       alignItems={"center"}
       borderRadius={1}
+      sx={{mr: 2}}
     >
       <Typography variant="h6" sx={{ p: 2 }}>
         {`Hello ${user?.first_name} ${user?.last_name}!`}
