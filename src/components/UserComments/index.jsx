@@ -1,11 +1,10 @@
-import { Avatar, Divider, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Divider, Stack, Typography } from "@mui/material";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchModel from "../../lib/fetchModelData";
 import { getAuthToken } from "../../common/functions";
 
-// import "./styles.css";
 const UserComment = (props) => {
     const { userId } = useParams();
     const [comments, setComments] = useState([]);
@@ -18,7 +17,6 @@ const UserComment = (props) => {
             const response = await fetchModel(`/api/commentsOfUser/${userId}`, "GET", null, token);
             const commentsData = response?.data;
 
-            // Fetch photo information for each comment
             const commentsWithPhotos = await Promise.all(
                 commentsData.map(async (comment) => {
                     const photoResponse = await fetchModel(
@@ -53,7 +51,8 @@ const UserComment = (props) => {
     };
 
     return (
-        <Stack spacing={2} bgcolor={"white"} p={2} borderRadius={2}>
+        <Box bgcolor={"white"} p={2} borderRadius={2} sx={{ mr: 2}}>
+            <Typography variant="h5" sx={{ mb: 2 }} fontWeight={"bold"}>All comments</Typography>
             {comments?.map((items, index) => {
                 return (
                     <>
@@ -111,12 +110,12 @@ const UserComment = (props) => {
                                 </Typography>
                             </Stack>
                         </Stack>
-                        <Divider />
+                        <Divider sx={{ mb: 2, mt: 2 }} />
                     </>
 
                 );
             })}
-        </Stack>
+        </Box>
     )
 };
 export default UserComment;

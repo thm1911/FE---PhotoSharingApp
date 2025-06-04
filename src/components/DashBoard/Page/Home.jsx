@@ -1,20 +1,19 @@
 import '../../../App.css';
 
 import React, { useState } from "react";
-import { Grid, Typography, Paper, SpeedDial, SpeedDialIcon, SpeedDialAction, Box, IconButton, Snackbar, Alert } from "@mui/material";
-import { BrowserRouter as Router, Route, Routes, Outlet } from "react-router-dom";
+import { Grid, Paper, Box, IconButton } from "@mui/material";
+import { Outlet } from "react-router-dom";
 import TopBar from '../../TopBar';
 import UserList from '../../UserList';
-import UserDetail from '../../UserDetail';
-import UserPhotos from '../../UserPhotos';
 import { getAuthToken, getUserId } from '../../../common/functions';
-import { AddAPhoto, AddBox } from '@mui/icons-material';
+import { AddBox } from '@mui/icons-material';
 import CreatePhoto from '../../UserPhotos/item/CreatePhotos';
 import fetchModel from '../../../lib/fetchModelData';
+import { io } from 'socket.io-client';
 
+const socket = io.connect("http://localhost:3001");
 
-
-const Home = (props) => {
+const Home = () => {
     const [open, setOpen] = useState(false);
     const [close, setClose] = useState(false);
     const [error, setError] = useState("");
@@ -60,9 +59,11 @@ const Home = (props) => {
                 formData,
                 token);
             if (res.success) {
+                socket.emit("uploadPhoto", res.data);
                 setOpenSnackbar(true);
                 setOpen(false);
                 setSelectedFile(null);
+                setDescription("");
                 setUploaded(null);
                 setError(null);
             }
@@ -79,12 +80,12 @@ const Home = (props) => {
                 <TopBar />
             </Grid>
             <div className="main-topbar-buffer" />
-            <Grid item sm={3} sx={{ ml: 2 }}>
+            <Grid item sm={3}>
                 <Paper style={{ maxHeight: "75vh", overflow: "auto" }}>
                     <UserList />
                 </Paper>
             </Grid>
-            <Grid item sm={8.5}>
+            <Grid item sm={9}>
                 <Outlet />
             </Grid>
 
@@ -106,16 +107,6 @@ const Home = (props) => {
                 error={error}
             />
 
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={2000}
-                onClose={() => setOpenSnackbar(false)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert severity="success" sx={{ width: '100%' }}>
-                    Photo uploaded successfully!
-                </Alert>
-            </Snackbar>
 
         </Grid>
     );

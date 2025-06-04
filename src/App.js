@@ -1,12 +1,11 @@
 import './App.css';
 
-import React from "react";
-import { Grid, Typography, Paper, Box } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Grid, Typography, Paper, Box, Snackbar, Alert } from "@mui/material";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import TopBar from "./components/TopBar";
 import UserDetail from "./components/UserDetail";
-import UserList from "./components/UserList";
 import UserPhotos from "./components/UserPhotos";
 import Auth from './components/Auth';
 import Home from './components/DashBoard/Page/Home';
@@ -16,6 +15,17 @@ import InitialPage from './components/DashBoard/Page/InitialPage';
 import UserComment from './components/UserComments';
 
 const App = (props) => {
+  const [alert, setAlert] = useState(false);
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (token) {
+      setAlert(true);
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+
   return (
     <Box bgcolor={"#E4E6EB"}>
       <Router>
@@ -70,6 +80,15 @@ const App = (props) => {
           <Route path="/register" element={<Auth authRoute="register" />} />
         </Routes>
       </Router>
+
+      <Snackbar
+        open={alert}
+        autoHideDuration={6000}
+        onClose={() => setAlert(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error">Token has expired. Please login again.</Alert>
+      </Snackbar>
     </Box>
   );
 };

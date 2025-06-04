@@ -1,8 +1,6 @@
 import { ArrowRightAlt } from "@mui/icons-material";
 import {
-    Backdrop,
     Box,
-    Button,
     CardMedia,
     Grid,
     Stack,

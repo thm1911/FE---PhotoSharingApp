@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import "./styles.css";
 import { useParams } from "react-router-dom";
@@ -7,7 +7,9 @@ import ItemPhoto from "./item/ItemPhoto";
 import { Grid } from "semantic-ui-react";
 import fetchModel from "../../lib/fetchModelData";
 import { getAuthToken } from "../../common/functions";
+import { io } from 'socket.io-client';
 
+const socket = io.connect("http://localhost:3001"); 
 
 function UserPhotos() {
   const { userId } = useParams();
@@ -46,15 +48,19 @@ function UserPhotos() {
   useEffect(() => {
     fetchUserInfo();
     fetchPhotos();
+    socket.on("newPhoto", (data) => {
+      fetchPhotos();
+    });
+
   }, [userId]);
 
 
   return (
-    <Grid container spacing={2}>
+    <Box container spacing={2}>
       {photos.map((photo) => (
         <ItemPhoto userInfo={userInfo} photo={photo} />
       ))}
-    </Grid>
+    </Box>
   );
 }
 

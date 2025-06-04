@@ -39,34 +39,20 @@ import CommentDetail from "../../UserComments/item/ItemComment";
 import fetchModel from "../../../lib/fetchModelData";
 import { getAuthToken, getUserId } from "../../../common/functions";
 import { useNavigate } from "react-router-dom";
-// import { translate } from "../../../utils/i18n/translate";
-// import { BaseUrl, socketComment } from "../../../utils/socketComment";
-// import "./styles.css";
+import { io } from "socket.io-client";
+import ItemComment from "../../UserComments/item/ItemComment";
+
+const socket = io.connect("http://localhost:3001");
 
 
 const ItemPhoto = (props) => {
     const { photo, userInfo } = props;
     const [user, setUser] = useState(null);
-    // let userPostPhoto =
-    //     userInfo?._id === item?.user_id
-    //         ? userInfo
-    //         : listUser.find((i) => i._id === item?.user_id);
     const navigate = useNavigate();
-    // const [photoData, setPhotoData] = useState(item);
-    // // const [numOfFavorite, setNumOfFavorite] = useState(0);
-    // // const [numOfBookmark, setNumOfBookmark] = useState(0);
     const [expanded, setExpanded] = useState(false);
-    // const [loading, setLoading] = useState(false);
     const [comment, setComment] = useState("");
+    const [commentOfPhoto, setCommentOfPhoto] = useState(photo?.comments || []);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-
-    // const [isFavorite, setIsFavorite] = useState(item?.isFavorite);
-    // const [isBookmark, setIsBookmark] = useState(item?.isBookmark);
-    // const [anchorEl, setAnchorEl] = useState(null);
-    // const { user } = useSelector((state) => state.auth);
-    // const open = Boolean(anchorEl);
-
-    // const isUser = item?.user_id === user?._id;
 
     const fetchUser = async () => {
         try {
@@ -99,6 +85,7 @@ const ItemPhoto = (props) => {
                 token
             );
             if (res?.success) {
+                socket.emit("sendComment", req);
                 setOpenSnackbar(true);
                 setExpanded(true);
                 setComment("");
@@ -110,73 +97,21 @@ const ItemPhoto = (props) => {
 
     useEffect(() => {
         fetchUser();
-    }, []);
+        setCommentOfPhoto(photo?.comments || []);
+        socket.on("newComment", (data) => {
+            if (data._id === photo._id) {
+                setCommentOfPhoto(prev => [...prev, data]);
+            }
+        });
+
+    }, [photo]);
 
     const goToUser = (userId) => {
         navigate(`/users/${userId}`);
     };
-    // const handleFavorite = async () => {
-    //   const res = await fetchModel(
-    //     `/api/likeOfPhoto/${photoData?._id}`,
-    //     isFavorite ? "delete" : "post"
-    //   );
-    //   socketComment.emit("likePost");
-    //   console.log("🚀 ~ postComment ~ res:", res);
-    //   setIsFavorite(!isFavorite);
-    // };
-    // const handleBookmark = async () => {
-    //   const res = await fetchModel(
-    //     `/api/bookmarkOfPhoto/${photoData?._id}`,
-    //     isBookmark ? "delete" : "post"
-    //   );
-    //   socketComment.emit("bookmarkPost");
-    //   setIsBookmark(!isBookmark);
-
-    //   console.log("🚀 ~ handleBookmark ~ res:", res);
-    // };
-    // const handleClick = (event) => {
-    //   setAnchorEl(event.currentTarget);
-    // };
-    // const handleClose = () => {
-    //   setAnchorEl(null);
-    // };
-    // const handleDeletePost = async () => {
-    //     try {
-    //         setLoading(true);
-    //         const res = await fetchModel(
-    //             `/api/photosOfUser/${photoData?._id}`,
-    //             "delete"
-    //         );
-    //         console.log("🚀 ~ postComment ~ res:", res);
-    //         if (res?.success) {
-    //             navigate(`/photos/${photoData?.user_id}`);
-    //             socketComment.emit("sendComment");
-    //         }
-    //         setLoading(false);
-    //     } catch (error) {
-    //         setLoading(false);
-    //         console.log("🚀 ~ getData ~ error:", error);
-    //     }
-    // };
-    // const getInitData = async () => {
-    //   const likeOfPhoto = await fetchModel(
-    //     `/api/likeOfPhoto/byPhoto/${photoData?._id}`
-    //   );
-    //   setNumOfFavorite(likeOfPhoto?.data?.length);
-    //   console.log("🚀 ~ getInitData ~ likeOfPhoto:", likeOfPhoto);
-
-    //   const bookmarkOfPhoto = await fetchModel(
-    //     `/api/bookmarkOfPhoto/byPhoto/${photoData?._id}`
-    //   );
-    //   setNumOfBookmark(bookmarkOfPhoto?.data?.length);
-    //   console.log("🚀 ~ getInitData ~ bookmarkOfPhoto:", bookmarkOfPhoto);
-    // };
-
-    // useEffect(() => {
-    //   getInitData();
-    // }, [isFavorite, isBookmark]);
+   
     return (
-        <Grid item xs={16} sm={12}>
+        <Grid item xs={16}>
             <Card variant="outlined" sx={{ mb: 3, mr: 2 }}>
                 <CardHeader
                     title={
@@ -198,33 +133,9 @@ const ItemPhoto = (props) => {
                             {userInfo?.first_name?.[0]}
                         </Avatar>
                     }
-                // action={
-                //     isUser ? (
-                //         <Box>
-                //             <IconButton onClick={handleClick} aria-label="settings">
-                //                 <MoreHoriz />
-                //             </IconButton>
-                //             <Menu
-                //                 id="account-menu"
-                //                 anchorEl={anchorEl}
-                //                 open={open}
-                //                 onClose={handleClose}
-                //                 MenuListProps={{
-                //                     "aria-labelledby": "basic-button",
-                //                 }}
-                //             >
-                //                 <MenuItem onClick={handleDeletePost}>
-                //                     <ListItemIcon>
-                //                         <Delete />
-                //                     </ListItemIcon>
-                //                     Delete
-                //                 </MenuItem>
-                //             </Menu>
-                //         </Box>
-                //     ) : null
-                // }
+               
                 />
-                <Typography variant="body2" sx={{ marginLeft: 3 }}>
+                <Typography variant="body2" sx={{ marginLeft: 3, marginBottom: 2}}>
                     {photo?.description}
                 </Typography>
                 <CardMedia
@@ -258,22 +169,20 @@ const ItemPhoto = (props) => {
                         </Box>
 
                         <Box display={"flex"} alignItems={"center"}>
-                            <IconButton color="black" onClick={() => setExpanded(!expanded)}>
+                            <IconButton color="black" onClick={
+                                () => {
+                                    console.log(photo._id);
+                                    setExpanded(!expanded);
+                                }
+                            }>
                                 {expanded ? <Comment /> : <CommentOutlined />}
                             </IconButton>
-                            {/* {numOfBookmark} */}
                         </Box>
-                        {/* <MenuItem onClick={() => setExpanded(!expanded)}>
-                            <Box mr={1}>
-                                <Chat fontSize="small" color={expanded ? "info" : "disabled"} />
-                            </Box> */}
-                        {/* {translate("photoSharing:comment")} */}
-                        {/* </MenuItem> */}
+
                         <Box display={"flex"} alignItems={"center"}>
                             <IconButton color="warning">
                                 <Bookmark />
                             </IconButton>
-                            {/* {numOfBookmark} */}
                         </Box>
                     </Stack>
                 </CardActions>
@@ -286,15 +195,12 @@ const ItemPhoto = (props) => {
                                 sx={{
                                     maxHeight: 300,
                                     overflow: "auto",
-                                    // how to hidden scrollbar
-                                    // "&::-webkit-scrollbar": {
-                                    //   display: "none",
-                                    // },
+                                
                                 }}
                             >
-                                {[...photo?.comments]?.reverse()?.map((items) => (
+                                {commentOfPhoto.map((items) => (
                                     <ListItem >
-                                        <CommentDetail items={items} />
+                                        <ItemComment items={items} />
                                     </ListItem>
                                 ))}
                             </List>
