@@ -1,4 +1,6 @@
 .topbar-appBar {
-  height: 60;
-  justify-content: "center";
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  background-color: #F29F05 !important;
 }
