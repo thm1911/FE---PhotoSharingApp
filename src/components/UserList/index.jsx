@@ -43,6 +43,7 @@ function UserList() {
       overflowY: 'auto',
       padding: '8px'
     }}>
+      <Typography variant="h5" color={"black"} fontWeight={"bold"} p={2}>List users</Typography>
       <List component="nav" sx={{ width: '100%' }}>
         {users?.map((item, index) => (
           <ItemUser

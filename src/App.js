@@ -13,6 +13,7 @@ import Home from './components/DashBoard/Page/Home';
 import DashBoard from './components/DashBoard';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import InitialPage from './components/DashBoard/Page/InitialPage';
+import UserComment from './components/UserComments';
 
 const App = (props) => {
   return (
@@ -50,6 +51,16 @@ const App = (props) => {
               element={
                 <ProtectedRoute>
                   <UserPhotos />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              index
+              path="/commentOfUser/:userId"
+              element={
+                <ProtectedRoute>
+                  <UserComment />
                 </ProtectedRoute>
               }
             />

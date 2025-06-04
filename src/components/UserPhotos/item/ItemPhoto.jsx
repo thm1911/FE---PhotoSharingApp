@@ -11,6 +11,7 @@ import {
     Send,
 } from "@mui/icons-material";
 import {
+    Alert,
     Avatar,
     Box,
     Card,
@@ -28,6 +29,7 @@ import {
     ListItemIcon,
     Menu,
     MenuItem,
+    Snackbar,
     Stack,
     Typography,
 } from "@mui/material";
@@ -56,6 +58,8 @@ const ItemPhoto = (props) => {
     const [expanded, setExpanded] = useState(false);
     // const [loading, setLoading] = useState(false);
     const [comment, setComment] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
     // const [isFavorite, setIsFavorite] = useState(item?.isFavorite);
     // const [isBookmark, setIsBookmark] = useState(item?.isBookmark);
     // const [anchorEl, setAnchorEl] = useState(null);
@@ -66,22 +70,21 @@ const ItemPhoto = (props) => {
 
     const fetchUser = async () => {
         try {
-          const token = getAuthToken();
-          const userId = getUserId();
-          const response = await fetchModel(`/api/user/${userId}`, "GET", null, token);
-          if (response.success) {
-            await setUser(response.data);
-          } else {
-            console.log("❌ Error get user:", response);
-          }
+            const token = getAuthToken();
+            const userId = getUserId();
+            const response = await fetchModel(`/api/user/${userId}`, "GET", null, token);
+            if (response.success) {
+                await setUser(response.data);
+            } else {
+                console.log("❌ Error get user:", response);
+            }
         } catch (error) {
-          console.error("❌ Error get user:", error);
+            console.error("❌ Error get user:", error);
         }
     };
 
     const postComment = async () => {
         await fetchUser();
-        console.log("User", user);
         try {
             const token = getAuthToken();
             const req = {
@@ -90,14 +93,15 @@ const ItemPhoto = (props) => {
                 user: user
             }
             const res = await fetchModel(
-            `/api/commentsOfUser/post`,
-            "post",
-            JSON.stringify(req),
-            token
+                `/api/commentsOfUser/post`,
+                "post",
+                JSON.stringify(req),
+                token
             );
             if (res?.success) {
-            setExpanded(true);
-            //   setPhoto(res?.data);
+                setOpenSnackbar(true);
+                setExpanded(true);
+                setComment("");
             }
         } catch (error) {
             console.log("❌ Error post comment:", error);
@@ -109,7 +113,7 @@ const ItemPhoto = (props) => {
     }, []);
 
     const goToUser = (userId) => {
-      navigate(`/users/${userId}`);
+        navigate(`/users/${userId}`);
     };
     // const handleFavorite = async () => {
     //   const res = await fetchModel(
@@ -171,8 +175,6 @@ const ItemPhoto = (props) => {
     // useEffect(() => {
     //   getInitData();
     // }, [isFavorite, isBookmark]);
-
-    console.log("photo", photo.file_path);
     return (
         <Grid item xs={16} sm={12}>
             <Card variant="outlined" sx={{ mb: 3, mr: 2 }}>
@@ -292,7 +294,7 @@ const ItemPhoto = (props) => {
                             >
                                 {[...photo?.comments]?.reverse()?.map((items) => (
                                     <ListItem >
-                                        <CommentDetail items={items}/>
+                                        <CommentDetail items={items} />
                                     </ListItem>
                                 ))}
                             </List>
@@ -321,6 +323,17 @@ const ItemPhoto = (props) => {
                     </IconButton>
                 </CardActions>
             </Card>
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={2000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert severity="success" sx={{ width: '100%' }}>
+                    Comment posted successfully!
+                </Alert>
+            </Snackbar>
         </Grid >
     );
 };

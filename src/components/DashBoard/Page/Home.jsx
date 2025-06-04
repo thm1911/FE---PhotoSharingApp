@@ -1,7 +1,7 @@
 import '../../../App.css';
 
 import React, { useState } from "react";
-import { Grid, Typography, Paper, SpeedDial, SpeedDialIcon, SpeedDialAction, Box, IconButton } from "@mui/material";
+import { Grid, Typography, Paper, SpeedDial, SpeedDialIcon, SpeedDialAction, Box, IconButton, Snackbar, Alert } from "@mui/material";
 import { BrowserRouter as Router, Route, Routes, Outlet } from "react-router-dom";
 import TopBar from '../../TopBar';
 import UserList from '../../UserList';
@@ -22,6 +22,15 @@ const Home = (props) => {
     const [uploaded, setUploaded] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [description, setDescription] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedFile(null);
+        setUploaded(null);
+        setError(null);
+        setDescription("");
+    }
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -47,10 +56,11 @@ const Home = (props) => {
         formData.append("user_id", getUserId());
 
         try {
-            const res = await fetchModel("/api/photosOfUser/upload", "POST", 
-                formData, 
+            const res = await fetchModel("/api/photosOfUser/upload", "POST",
+                formData,
                 token);
             if (res.success) {
+                setOpenSnackbar(true);
                 setOpen(false);
                 setSelectedFile(null);
                 setUploaded(null);
@@ -69,12 +79,12 @@ const Home = (props) => {
                 <TopBar />
             </Grid>
             <div className="main-topbar-buffer" />
-            <Grid item sm={3}>
+            <Grid item sm={3} sx={{ ml: 2 }}>
                 <Paper style={{ maxHeight: "75vh", overflow: "auto" }}>
                     <UserList />
                 </Paper>
             </Grid>
-            <Grid item sm={9}>
+            <Grid item sm={8.5}>
                 <Outlet />
             </Grid>
 
@@ -86,14 +96,27 @@ const Home = (props) => {
             </Box>
 
             <CreatePhoto open={open}
-                onClose={() => setOpen(false)}
+                onClose={handleClose}
                 handleFileChange={handleFileChange}
                 uploaded={uploaded}
                 description={description}
                 setDescription={setDescription}
                 handleSubmit={handleSubmit}
                 loading={loading}
+                error={error}
             />
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={2000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert severity="success" sx={{ width: '100%' }}>
+                    Photo uploaded successfully!
+                </Alert>
+            </Snackbar>
+
         </Grid>
     );
 }

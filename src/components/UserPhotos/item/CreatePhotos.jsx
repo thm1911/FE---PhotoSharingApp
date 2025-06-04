@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import HiddenInput from "../../common/HiddenInput";
 import CustomButton from "../../common/CustomButton";
+import { useState } from "react";
 
 const CreatePhoto = (props) => {
     const {
@@ -53,7 +54,7 @@ const CreatePhoto = (props) => {
                     />
                 </CustomButton>
                 <DialogContentText mt={2}>
-                    {/* {error && <Alert severity="error">{error}</Alert>} */}
+                    {error && <Alert severity="error">{error}</Alert>}
                 </DialogContentText>
                 <DialogContentText>
                     Description:

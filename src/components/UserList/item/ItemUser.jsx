@@ -2,6 +2,7 @@ import {
   Avatar,
   Divider,
   ListItem,
+  
   ListItemText,
   Stack,
   Typography,
@@ -9,7 +10,9 @@ import {
 import React, { useEffect, useState } from "react";
 import { getAuthToken } from "../../../common/functions";
 import fetchModel from "../../../lib/fetchModelData";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import UserComment from "../../UserComments";
+import CircleButton from "../../common/CircleButton";
 
 
 const ItemUser = (props) => {
@@ -25,7 +28,7 @@ const ItemUser = (props) => {
     try {
       const token = getAuthToken();
       const photos = await fetchModel(`/api/photosOfUser/${item?._id}`, "GET", null, token);
-      
+
       if (photos?.success) setNumOfPhotos(photos?.data?.length);
 
       const photoUserComment = await fetchModel(
@@ -57,31 +60,29 @@ const ItemUser = (props) => {
   return (
     <>
       <ListItem style={{ cursor: "pointer" }}>
-        <Stack direction="row" flex={1}>
+        <Stack direction="row" flex={1} alignItems={"center"}>
           <ListItemText
             primary={`${item?.first_name}`}
             onClick={() => handleClick(item?._id)}
           />
           <Stack direction="row" alignItems={"center"} spacing={2}>
             {numOfComment ? (
-              <Avatar
-                // onClick={() => goToPhotoUserComment(item?._id)}
-                sx={{ backgroundColor: "#d32f2f", width: 24, height: 24 }}
+              <CircleButton
+                primary="red"
+                secondary="#d32f2f"
+                onClick={() => goToPhotoUserComment(item?._id)}
               >
-                <Typography variant="body2" color={"whitesmoke"}>
-                  {numOfComment}
-                </Typography>
-              </Avatar>
+                {numOfComment}
+              </CircleButton>
             ) : null}
             {numOfPhotos ? (
-              <Avatar
+              <CircleButton
+                primary="green"
+                secondary="darkgreen"
                 onClick={() => goToPhotosOfUser(item?._id)}
-                sx={{ backgroundColor: "#2e7d32", width: 24, height: 24 }}
               >
-                <Typography variant="body2" color={"whitesmoke"}>
-                  {numOfPhotos}
-                </Typography>
-              </Avatar>
+                {numOfPhotos}
+              </CircleButton>
             ) : (
               <></>
             )}
