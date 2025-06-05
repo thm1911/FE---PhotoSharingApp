@@ -16,12 +16,14 @@ import UserComment from './components/UserComments';
 
 const App = (props) => {
   const [alert, setAlert] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("tokenExpired");
 
   useEffect(() => {
     if (token) {
       setAlert(true);
       localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+
     }
   }, [token]);
 

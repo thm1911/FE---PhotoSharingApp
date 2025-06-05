@@ -39,20 +39,27 @@ import CommentDetail from "../../UserComments/item/ItemComment";
 import fetchModel from "../../../lib/fetchModelData";
 import { getAuthToken, getUserId } from "../../../common/functions";
 import { useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
+import { socket } from "../../../utils/utils";
 import ItemComment from "../../UserComments/item/ItemComment";
 
-const socket = io.connect("http://localhost:3001");
 
 
 const ItemPhoto = (props) => {
-    const { photo, userInfo } = props;
+    const {
+        photo,
+        userInfo,
+        onComment,
+        setOnComment,
+        onDelete,
+        setOnDelete
+    } = props;
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [expanded, setExpanded] = useState(false);
     const [comment, setComment] = useState("");
     const [commentOfPhoto, setCommentOfPhoto] = useState(photo?.comments || []);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const currentUser = getUserId();
 
     const fetchUser = async () => {
         try {
@@ -86,6 +93,7 @@ const ItemPhoto = (props) => {
             );
             if (res?.success) {
                 socket.emit("sendComment", req);
+                setOnComment(res?.data);
                 setOpenSnackbar(true);
                 setExpanded(true);
                 setComment("");
@@ -95,24 +103,43 @@ const ItemPhoto = (props) => {
         }
     };
 
+    const deletePhoto = async () => {
+        const token = getAuthToken();
+        try {
+            const res = await fetchModel(`/api/photosOfUser/${photo._id}`, "DELETE", null, token);
+            socket.emit("deletePhoto", photo._id);
+            setOnDelete(photo._id);
+        } catch (error) {
+            console.log("❌ Error delete photo:", error);
+        }
+    }
+
     useEffect(() => {
         fetchUser();
         setCommentOfPhoto(photo?.comments || []);
-        socket.on("newComment", (data) => {
-            if (data._id === photo._id) {
-                setCommentOfPhoto(prev => [...prev, data]);
-            }
-        });
 
     }, [photo]);
 
     const goToUser = (userId) => {
         navigate(`/users/${userId}`);
     };
-   
+
     return (
         <Grid item xs={16}>
-            <Card variant="outlined" sx={{ mb: 3, mr: 2 }}>
+            <Card variant="outlined" sx={{ mb: 3, mr: 2, position: 'relative' }}>
+                {currentUser == photo.user_id && (
+                    <IconButton
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: 'red',
+                        }}
+                        onClick={deletePhoto}
+                    >
+                        <Delete />
+                    </IconButton>
+                )}
                 <CardHeader
                     title={
                         <Typography
@@ -133,9 +160,9 @@ const ItemPhoto = (props) => {
                             {userInfo?.first_name?.[0]}
                         </Avatar>
                     }
-               
+
                 />
-                <Typography variant="body2" sx={{ marginLeft: 3, marginBottom: 2}}>
+                <Typography variant="body2" sx={{ marginLeft: 3, marginBottom: 2 }}>
                     {photo?.description}
                 </Typography>
                 <CardMedia
@@ -171,18 +198,12 @@ const ItemPhoto = (props) => {
                         <Box display={"flex"} alignItems={"center"}>
                             <IconButton color="black" onClick={
                                 () => {
-                                    console.log(photo._id);
                                     setExpanded(!expanded);
                                 }
                             }>
                                 {expanded ? <Comment /> : <CommentOutlined />}
                             </IconButton>
-                        </Box>
-
-                        <Box display={"flex"} alignItems={"center"}>
-                            <IconButton color="warning">
-                                <Bookmark />
-                            </IconButton>
+                            {commentOfPhoto.length}
                         </Box>
                     </Stack>
                 </CardActions>
@@ -195,7 +216,7 @@ const ItemPhoto = (props) => {
                                 sx={{
                                     maxHeight: 300,
                                     overflow: "auto",
-                                
+
                                 }}
                             >
                                 {commentOfPhoto.map((items) => (

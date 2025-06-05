@@ -26,7 +26,7 @@ function fetchModel(url, method, body, token) {
     if(res.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
-      localStorage.setItem("token");
+      localStorage.setItem("tokenExpired", "Token expired. Please login again.");
       window.location.href = "/login";
       return;
     }

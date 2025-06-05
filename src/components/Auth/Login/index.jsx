@@ -39,7 +39,7 @@ const Login = () => {
         navigate("/users");
       }
     } catch (error) {
-      setAlert({ type: "error", msg: error });
+      setAlert({ type: "error", msg: error.message });
       console.log("❌ Error login:", error);
     }
   };

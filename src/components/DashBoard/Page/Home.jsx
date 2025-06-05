@@ -9,9 +9,7 @@ import { getAuthToken, getUserId } from '../../../common/functions';
 import { AddBox } from '@mui/icons-material';
 import CreatePhoto from '../../UserPhotos/item/CreatePhotos';
 import fetchModel from '../../../lib/fetchModelData';
-import { io } from 'socket.io-client';
-
-const socket = io.connect("http://localhost:3001");
+import { socket } from '../../../utils/utils';
 
 const Home = () => {
     const [open, setOpen] = useState(false);

@@ -19,9 +19,7 @@ import CustomDoubleTextField from "../../common/CustomDoubleTextField";
 import CustomTextField from "../../common/CustomTextField";
 import CustomButton from "../../common/CustomButton";
 import { getAuthToken } from "../../../common/functions";
-import { io } from "socket.io-client";
-
-const socket = io.connect("http://localhost:3001");
+import { socket } from "../../../utils/utils";
 
 const UpdateInfor = (props) => {
     const { open, onClose, userInfo } = props;
