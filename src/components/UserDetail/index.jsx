@@ -11,9 +11,7 @@ import CustomButton from "../common/CustomButton";
 import { Padding } from "@mui/icons-material";
 import { getAuthToken } from "../../common/functions";
 import { useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
-
-const socket = io.connect("http://localhost:3001");
+import { socket } from "../../utils/utils";
 
 function UserDetail() {
   const { userId } = useParams();

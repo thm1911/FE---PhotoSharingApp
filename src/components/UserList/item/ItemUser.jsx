@@ -12,9 +12,7 @@ import { getAuthToken } from "../../../common/functions";
 import fetchModel from "../../../lib/fetchModelData";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import CircleButton from "../../common/CircleButton";
-import { io } from "socket.io-client";
-
-const socket = io.connect("http://localhost:3001");
+import { socket } from "../../../utils/utils";
 
 const ItemUser = (props) => {
   const { item, handleClick, isLast } = props;
@@ -57,6 +55,10 @@ const ItemUser = (props) => {
 
   useEffect(() => {
     socket.on("newComment", () => {
+      getData();
+    });
+
+    socket.on("deletedPhoto", () => {
       getData();
     });
 

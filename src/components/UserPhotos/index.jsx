@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, FormControlLabel, Switch, Typography } from "@mui/material";
 
 import "./styles.css";
 import { useParams } from "react-router-dom";
@@ -7,14 +7,17 @@ import ItemPhoto from "./item/ItemPhoto";
 import { Grid } from "semantic-ui-react";
 import fetchModel from "../../lib/fetchModelData";
 import { getAuthToken } from "../../common/functions";
-import { io } from 'socket.io-client';
-
-const socket = io.connect("http://localhost:3001"); 
+import { socket } from "../../utils/utils";
+import BasicMode from "./item/BasicMode";
+import AdvanceMode from "./item/AdvanceMode";
 
 function UserPhotos() {
   const { userId } = useParams();
   const [photos, setPhotos] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
+  const [isAdvancedMode, setIsAdvancedMode] = useState(false);
+  const [onComment, setOnComment] = useState([]);
+  const [onDelete, setOnDelete] = useState([]);
 
   const fetchUserInfo = async () => {
     try {
@@ -54,12 +57,58 @@ function UserPhotos() {
 
   }, [userId]);
 
+  useEffect(() => {
+    socket.on("newComment", (data) => {
+      fetchPhotos();
+    });
+  }, [onComment]);
+
+  useEffect(() => {
+    socket.on("deletedPhoto", (data) => {
+      fetchPhotos();
+    });
+  }, [onDelete]);
 
   return (
-    <Box container spacing={2}>
-      {photos.map((photo) => (
-        <ItemPhoto userInfo={userInfo} photo={photo} />
-      ))}
+    <Box>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isAdvancedMode}
+              onChange={(e) => setIsAdvancedMode(e.target.checked)}
+              sx={{
+                '&.Mui-checked': {
+                  color: '#F29F05',
+                  '& + .MuiSwitch-track': {
+                    backgroundColor: '#F29F05',
+                    opacity: 0.5,
+                  },
+                },
+              }}
+
+            />
+          }
+          label={isAdvancedMode ? "Advanced Mode" : "Basic Mode"}
+        />
+      </Box>
+      {isAdvancedMode ?
+        <AdvanceMode
+          photos={photos}
+          userInfo={userInfo}
+          onComment={onComment}
+          setOnComment={setOnComment}
+          onDelete={onDelete}
+          setOnDelete={setOnDelete}
+        />
+        : <BasicMode
+          photos={photos}
+          userInfo={userInfo}
+          onComment={onComment}
+          setOnComment={setOnComment}
+          onDelete={onDelete}
+          setOnDelete={setOnDelete}
+        />}
     </Box>
   );
 }
